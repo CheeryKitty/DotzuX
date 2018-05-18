@@ -7,7 +7,7 @@
 //
 
 #import "NetworkHelper.h"
-#import "SessionProtocol.h"
+#import "CustomProtocol.h"
 
 @interface NetworkHelper()
 
@@ -30,13 +30,13 @@
 - (void)enable
 {
     self.isEnable = YES;
-    [NSURLProtocol registerClass:[SessionProtocol class]];
+    [NSURLProtocol registerClass:[CustomProtocol class]];
 }
 
 - (void)disable
 {
     self.isEnable = NO;
-    [NSURLProtocol unregisterClass:[SessionProtocol class]];
+    [NSURLProtocol unregisterClass:[CustomProtocol class]];
 }
 
 @end
