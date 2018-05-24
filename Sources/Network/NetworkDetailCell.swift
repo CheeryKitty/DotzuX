@@ -28,7 +28,7 @@ class NetworkDetailCell: UITableViewCell {
     //-12.5
     
     
-    var tapTitleViewCallback:((NetworkDetailModel?) -> Void)?
+//    var tapTitleViewCallback:((NetworkDetailModel?) -> Void)?
     var tapEditViewCallback:((NetworkDetailModel?) -> Void)?
     
     var detailModel: NetworkDetailModel? {
@@ -66,7 +66,7 @@ class NetworkDetailCell: UITableViewCell {
             }
             
             //to JSON
-            if detailModel?.title == "HEADER" {
+            if detailModel?.title == "REQUEST HEADER" || detailModel?.title == "RESPONSE HEADER" {
                 editView.isHidden = false
             }else{
                 if detailModel?.title == "REQUEST" {
@@ -92,35 +92,25 @@ class NetworkDetailCell: UITableViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
         
+//        titleView.addGestureRecognizer(UITapGestureRecognizer.init(target: self, action: #selector(tapTitleView)))
+        editView.addGestureRecognizer(UITapGestureRecognizer.init(target: self, action: #selector(tapEditView)))
+        
         contentTextView.textContainer.lineFragmentPadding = 0
         contentTextView.textContainerInset = .zero
-        
-        
-        //自动隐藏内容
-        let tap = UITapGestureRecognizer()
-        titleView.addGestureRecognizer(tap)
-        tap.rx
-            .event
-            .subscribe(onNext: { [weak self] (_) in
-                
-                if let tapTitleViewCallback = self?.tapTitleViewCallback {
-                    tapTitleViewCallback(self?.detailModel)
-                }
-            })
-            .disposed(by: rx.disposeBag)
-        
-        
-        //编辑
-        let tap2 = UITapGestureRecognizer()
-        editView.addGestureRecognizer(tap2)
-        tap2.rx
-            .event
-            .subscribe(onNext: { [weak self] (_) in
-                
-                if let tapEditViewCallback = self?.tapEditViewCallback {
-                    tapEditViewCallback(self?.detailModel)
-                }
-            })
-            .disposed(by: rx.disposeBag)
+    }
+    
+    //MARK: - target action
+    //自动隐藏内容
+//    @objc func tapTitleView() {
+//        if let tapTitleViewCallback = tapTitleViewCallback {
+//            tapTitleViewCallback(detailModel)
+//        }
+//    }
+    
+    //编辑
+    @objc func tapEditView() {
+        if let tapEditViewCallback = tapEditViewCallback {
+            tapEditViewCallback(detailModel)
+        }
     }
 }

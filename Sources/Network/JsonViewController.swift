@@ -10,6 +10,7 @@ enum EditType {
     case unknown
     case request
     case header
+    case redirectHeader
 }
 
 import Foundation
@@ -55,6 +56,23 @@ class JsonViewController: UITableViewController {
             //Form格式
             detailModel?.requestSerializer = FormRequestSerializer
             segmentedControl.selectedSegmentIndex = 1
+            
+            //....
+//            if requestSerializer == FormRequestSerializer {//原格式为Form
+//                if sender.selectedSegmentIndex == 0 {//转换为JSON
+            
+                    if let jsonString = detailModel?.content?.formStringToJsonString() {
+                        textView.text = jsonString
+                        self.textViewDidChange(textView)
+                        detailModel?.requestSerializer = JSONRequestSerializer
+                        detailModel?.content = textView.text
+                    }else{
+//                        sender.selectedSegmentIndex = 1
+                        UIAlertController.showError(title: "Format is illegal", controller: self)
+//                        return
+                    }
+//                }
+//            }
         }
     }
     
@@ -104,14 +122,18 @@ class JsonViewController: UITableViewController {
         if detailModel?.title == "REQUEST" {
             editType = .request
         }
-        if detailModel?.title == "HEADER" {
+        if detailModel?.title == "REQUEST HEADER" {
             editType = .header
+        }
+        if detailModel?.title == "RESPONSE HEADER" {
+            editType = .redirectHeader
         }
         
         //设置UI
         if editType == .request
         {
-            tableView.tableHeaderView?.frame.size.height = 28
+//            tableView.tableHeaderView?.frame.size.height = 28
+            tableView.tableHeaderView?.frame.size.height = 0
             tableView.tableHeaderView?.isHidden = false
             textView.text = detailModel?.content
             detectSerializer()//确定格式(JSON/Form)
@@ -121,6 +143,12 @@ class JsonViewController: UITableViewController {
             tableView.tableHeaderView?.frame.size.height = 0
             tableView.tableHeaderView?.isHidden = true
             textView.text = detailModel?.headerFields?.dictionaryToString()
+        }
+        else if editType == .redirectHeader
+        {
+            tableView.tableHeaderView?.frame.size.height = 0
+            tableView.tableHeaderView?.isHidden = true
+            textView.text = detailModel?.redirectHeaderFields?.dictionaryToString()
         }
         else
         {

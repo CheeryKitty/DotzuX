@@ -56,29 +56,37 @@ class NetworkDetailViewController: UITableViewController {
             let m2 = NetworkDetailModel.init(title: "REQUEST", content: requestContent)
             var m3 = NetworkDetailModel.init(title: "RESPONSE", content: nil)
             let m8 = NetworkDetailModel.init(title: "ERROR", content: httpModel?.errorLocalizedDescription)
-            let m4 = NetworkDetailModel.init(title: "ERROR DETAILS", content: httpModel?.errorDescription)
+            let m4 = NetworkDetailModel.init(title: "ERROR DESCRIPTION", content: httpModel?.errorDescription)
             if let responseData = httpModel?.responseData {
                 m3 = NetworkDetailModel.init(title: "RESPONSE", content: nil, UIImage.init(data: responseData))
             }
             //2.次要
-            let m5 = NetworkDetailModel.init(title: "LATENCY", content: httpModel?.totalDuration)
+            let m5 = NetworkDetailModel.init(title: "TOTAL TIME", content: httpModel?.totalDuration)
             let m6 = NetworkDetailModel.init(title: "MIME TYPE", content: httpModel?.mineType)
-            var m7 = NetworkDetailModel.init(title: "HEADER", content: nil)
+            var m7 = NetworkDetailModel.init(title: "REQUEST HEADER", content: nil)
             if let headerFields = httpModel?.headerFields {
                 if !headerFields.isEmpty {
-                    m7 = NetworkDetailModel.init(title: "HEADER", content: headerFields.description)
+                    m7 = NetworkDetailModel.init(title: "REQUEST HEADER", content: headerFields.description)
                     m7.headerFields = headerFields
+                }
+            }
+            var m7_ = NetworkDetailModel.init(title: "RESPONSE HEADER", content: nil)
+            if let redirectHeaderFields = httpModel?.redirectHeaderFields {
+                if !redirectHeaderFields.isEmpty {
+                    m7_ = NetworkDetailModel.init(title: "RESPONSE HEADER", content: redirectHeaderFields.description)
+                    m7_.redirectHeaderFields = redirectHeaderFields
                 }
             }
             //3.
             detailModels.append(m1)
-            detailModels.append(m3)
+            detailModels.append(m7)
             detailModels.append(m2)
+            detailModels.append(m7_)
+            detailModels.append(m3)
             detailModels.append(m8)
             detailModels.append(m4)
-            detailModels.append(m7)
-            detailModels.append(m6)
             detailModels.append(m5)
+            detailModels.append(m6)
         }
         else{
             //非图片:
@@ -87,26 +95,34 @@ class NetworkDetailViewController: UITableViewController {
             let m2 = NetworkDetailModel.init(title: "REQUEST", content: requestContent)
             let m3 = NetworkDetailModel.init(title: "RESPONSE", content: httpModel?.responseData.dataToPrettyPrintString())
             let m8 = NetworkDetailModel.init(title: "ERROR", content: httpModel?.errorLocalizedDescription)
-            let m4 = NetworkDetailModel.init(title: "ERROR DETAILS", content: httpModel?.errorDescription)
+            let m4 = NetworkDetailModel.init(title: "ERROR DESCRIPTION", content: httpModel?.errorDescription)
             //2.次要
-            let m5 = NetworkDetailModel.init(title: "LATENCY", content: httpModel?.totalDuration)
+            let m5 = NetworkDetailModel.init(title: "TOTAL TIME", content: httpModel?.totalDuration)
             let m6 = NetworkDetailModel.init(title: "MIME TYPE", content: httpModel?.mineType)
-            var m7 = NetworkDetailModel.init(title: "HEADER", content: nil)
+            var m7 = NetworkDetailModel.init(title: "REQUEST HEADER", content: nil)
             if let headerFields = httpModel?.headerFields {
                 if !headerFields.isEmpty {
-                    m7 = NetworkDetailModel.init(title: "HEADER", content: headerFields.description)
+                    m7 = NetworkDetailModel.init(title: "REQUEST HEADER", content: headerFields.description)
                     m7.headerFields = headerFields
+                }
+            }
+            var m7_ = NetworkDetailModel.init(title: "RESPONSE HEADER", content: nil)
+            if let redirectHeaderFields = httpModel?.redirectHeaderFields {
+                if !redirectHeaderFields.isEmpty {
+                    m7_ = NetworkDetailModel.init(title: "RESPONSE HEADER", content: redirectHeaderFields.description)
+                    m7_.redirectHeaderFields = redirectHeaderFields
                 }
             }
             //3.
             detailModels.append(m1)
-            detailModels.append(m3)
+            detailModels.append(m7)
             detailModels.append(m2)
+            detailModels.append(m7_)
+            detailModels.append(m3)
             detailModels.append(m8)
             detailModels.append(m4)
-            detailModels.append(m7)
+            detailModels.append(m5)
             detailModels.append(m6)
-            detailModels.append(m5)            
         }
     }
     
@@ -169,13 +185,12 @@ extension NetworkDetailViewController {
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        if indexPath.row == 0 {
-            let cell = tableView.dequeueReusableCell(withIdentifier: "NetworkCell", for: indexPath)
-                as! NetworkCell
-            cell.httpModel = httpModel
-            
-            return cell
-        }
+//        if indexPath.row == 0 {
+//            let cell = tableView.dequeueReusableCell(withIdentifier: "NetworkCell", for: indexPath)
+//                as! NetworkCell
+//            cell.httpModel = httpModel
+//            return cell
+//        }
         
         //------------------------------------------------------------------------------
         
@@ -184,22 +199,22 @@ extension NetworkDetailViewController {
         cell.detailModel = detailModels[indexPath.row]
         
         //1.点击了标题view
-        cell.tapTitleViewCallback = { [weak self] detailModel in
-            if let index = self?.detailModels.index(where: { (model_) -> Bool in
-                return model_.title == detailModel?.title
-            }) {
-                if var model = self?.detailModels[index] {
-                    if model.blankContent == "..." {
-                        model.blankContent = nil
-                    }else{
-                        model.blankContent = "..."
-                    }
-                    self?.detailModels.remove(at: index)
-                    self?.detailModels.insert(model, at: index)
-                }
-            }
-            self?.tableView.reloadData()
-        }
+//        cell.tapTitleViewCallback = { [weak self] detailModel in
+//            if let index = self?.detailModels.index(where: { (model_) -> Bool in
+//                return model_.title == detailModel?.title
+//            }) {
+//                if var model = self?.detailModels[index] {
+//                    if model.blankContent == "..." {
+//                        model.blankContent = nil
+//                    }else{
+//                        model.blankContent = "..."
+//                    }
+//                    self?.detailModels.remove(at: index)
+//                    self?.detailModels.insert(model, at: index)
+//                }
+//            }
+//            self?.tableView.reloadData()
+//        }
         
         //2.点击了编辑view (编辑request/header)
         cell.tapEditViewCallback = { [weak self] detailModel in
@@ -217,7 +232,6 @@ extension NetworkDetailViewController {
     
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         
-        guard let serverURL = DotzuXSettings.shared.serverURL else {return 0}
         let detailModel = detailModels[indexPath.row]
         
         if detailModel.blankContent == "..." {
@@ -228,31 +242,6 @@ extension NetworkDetailViewController {
         }
         
         if indexPath.row == 0 {
-            var height: CGFloat = 0.0
-            if let cString = self.httpModel?.url.absoluteString.cString(using: String.Encoding.utf8) {
-                if let content_ = NSString(cString: cString, encoding: String.Encoding.utf8.rawValue) {
-                    
-                    if self.httpModel?.url.absoluteString.contains(serverURL) == true {
-                        //计算NSString高度
-                        if #available(iOS 8.2, *) {
-                            height = content_._height(with: UIFont.systemFont(ofSize: 13, weight: .heavy), constraintToWidth: (UIScreen.main.bounds.size.width - 92))
-                        } else {
-                            // Fallback on earlier versions
-                            height = content_._height(with: UIFont.boldSystemFont(ofSize: 13), constraintToWidth: (UIScreen.main.bounds.size.width - 92))
-                        }
-                    }else{
-                        //计算NSString高度
-                        if #available(iOS 8.2, *) {
-                            height = content_._height(with: UIFont.systemFont(ofSize: 13, weight: .regular), constraintToWidth: (UIScreen.main.bounds.size.width - 92))
-                        } else {
-                            // Fallback on earlier versions
-                            height = content_._height(with: UIFont.systemFont(ofSize: 13), constraintToWidth: (UIScreen.main.bounds.size.width - 92))
-                        }
-                    }
-                    
-                    return height + 57
-                }
-            }
             return 0
         }
         
@@ -269,5 +258,44 @@ extension NetworkDetailViewController {
         }
         
         return UIScreen.main.bounds.size.width + 50
+    }
+    
+    
+    override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "NetworkCell")
+            as! NetworkCell
+        cell.httpModel = httpModel
+        return cell.contentView
+    }
+
+
+    override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        guard let serverURL = DotzuXSettings.shared.serverURL else {return 0}
+        
+        var height: CGFloat = 0.0
+        if let cString = self.httpModel?.url.absoluteString.cString(using: String.Encoding.utf8) {
+            if let content_ = NSString(cString: cString, encoding: String.Encoding.utf8.rawValue) {
+                
+                if self.httpModel?.url.absoluteString.contains(serverURL) == true {
+                    //计算NSString高度
+                    if #available(iOS 8.2, *) {
+                        height = content_._height(with: UIFont.systemFont(ofSize: 13, weight: .heavy), constraintToWidth: (UIScreen.main.bounds.size.width - 92))
+                    } else {
+                        // Fallback on earlier versions
+                        height = content_._height(with: UIFont.boldSystemFont(ofSize: 13), constraintToWidth: (UIScreen.main.bounds.size.width - 92))
+                    }
+                }else{
+                    //计算NSString高度
+                    if #available(iOS 8.2, *) {
+                        height = content_._height(with: UIFont.systemFont(ofSize: 13, weight: .regular), constraintToWidth: (UIScreen.main.bounds.size.width - 92))
+                    } else {
+                        // Fallback on earlier versions
+                        height = content_._height(with: UIFont.systemFont(ofSize: 13), constraintToWidth: (UIScreen.main.bounds.size.width - 92))
+                    }
+                }
+                return height + 57
+            }
+        }
+        return 0
     }
 }
